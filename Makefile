@@ -6,18 +6,28 @@
 #    By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/29 13:51:09 by thabeck-          #+#    #+#              #
-#    Updated: 2024/08/02 14:46:10 by thabeck-         ###   ########.fr        #
+#    Updated: 2024/08/10 00:46:26 by thabeck-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= webserv
+NAME	=	webserv
 
-CC		= c++
-CFLAGS	= -Wall -Wextra -Werror -std=c++98
+CC		=	c++
+CFLAGS	=	-Wall -Wextra -Werror -std=c++98
 
-RM		= rm -rf
+RM		=	rm -rf
 
-SRC 	= main.cpp Server.cpp Request.cpp Response.cpp Utils.cpp Config.cpp
+SRC 	=	main.cpp \
+			Webserv.cpp \
+			Utils.cpp \
+			Server.cpp \
+			ServerConf.cpp \
+			Location.cpp \
+			Request.cpp \
+			Response.cpp \
+			Client.cpp \
+			ConfFile.cpp \
+			Cgi.cpp
 
 
 OBJ_PATH	= obj/
@@ -28,7 +38,7 @@ GR		= \033[32;1m
 RE		= \033[31;1m
 RC		= \033[0m
 
-$(OBJ_PATH)%.o:	srcs/%.cpp
+$(OBJ_PATH)%.o:	src/%.cpp
 	@mkdir -p $(OBJ_PATH)
 	@$(CC) $(CFLAGS) -c $< -o $@
 

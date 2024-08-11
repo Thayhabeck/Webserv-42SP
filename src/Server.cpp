@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 22:58:44 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 19:13:38 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/11 17:30:37 by thabeck-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ Server &Server::operator=(const Server & rhs)
 /* Inicia as páginas de erro padrão */
 void Server::initErrorPages(void)
 {
+	_error_pages[301] = "";
+	_error_pages[302] = "";
 	_error_pages[400] = "";
 	_error_pages[401] = "";
 	_error_pages[402] = "";

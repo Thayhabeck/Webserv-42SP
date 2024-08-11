@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:20:35 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/09 23:52:19 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:17:38 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void    Webserv::runServers()
     struct timeval timer;
     while (true)
     {
+        // configura o temporizador para um total de 1 segundo
         timer.tv_sec = 1;
         timer.tv_usec = 0;
         recv_set_cpy = _recv_fd_pool;
@@ -82,18 +83,18 @@ void    Webserv::runServers()
         // select() retorna o número de descritores de arquivo prontos para leitura ou gravação
         if ( (select_ret = select(_biggest_fd + 1, &recv_set_cpy, &write_set_cpy, NULL, &timer)) < 0 )
         {
-            std::cerr << RED "webserv: select error: " RESET << strerror(errno) << std::endl;
-            exit(1);
+            std::cerr << RED "webserv: select error" RESET << std::endl;
+            exit(EXIT_FAILURE);
             continue ;
         }
         for (int i = 0; i <= _biggest_fd; ++i)
         {
-            // FD_ISSET é uma macro que verifica se um descritor de arquivo está no conjunto de descritores de arquivo recv_set_cpy
-            if (FD_ISSET(i, &recv_set_cpy) && _servers_map.count(i)) //Aceita nova conexão de cliente
-                openCliConnection(_servers_map.find(i)->second);
-            else if (FD_ISSET(i, &recv_set_cpy) && _clients_map.count(i)) //Lê mensagem do cliente
+            // FD_ISSET é uma macro que verifica se um descritor de arquivo está no conjunto de descritores de arquivo recv_set_cpy e se ele está pronto para execução
+            if (FD_ISSET(i, &recv_set_cpy) && _servers_map.count(i)) // Uma nova conexão foi solicitada por um cliente
+				openCliConnection(_servers_map.find(i)->second); // Aceita a conexão e dá um fd de socket para o Client
+            else if (FD_ISSET(i, &recv_set_cpy) && _clients_map.count(i)) // Há dados disponíveis para serem lidos de um cliente existente
                 readRequest(i, _clients_map[i]);
-            else if (FD_ISSET(i, &write_set_cpy) && _clients_map.count(i)) //Envia resposta ao cliente
+            else if (FD_ISSET(i, &write_set_cpy) && _clients_map.count(i))
             {
                 int cgi_state = _clients_map[i].response.getCgiState(); // 0->NoCGI 1->CGI write/read to/from script 2-CGI read/write done
                 if (cgi_state == 1 && FD_ISSET(_clients_map[i].response._cgi_obj.pipe_in[1], &write_set_cpy)) //Envia corpo da requisição ao script CGI
@@ -135,19 +136,20 @@ void    Webserv::initializeSets()
     {
         // listen() é uma chamada de sistema que coloca o socket em um estado passivo, onde ele espera por conexões de entrada.
         // O segundo argumento é o número de conexões que podem ser enfileiradas antes de serem aceitas.
-        if (listen(it->getServerFd(), 512) == -1)
+        if (listen(it->getServerFd(), N_QUEUED_CONECTIONS) == -1)
         {
-            std::cerr << RED "webserv: listen error: " RESET << strerror(errno)<< std::endl;
+            std::cerr << RED "webserv: listen error" RESET << std::endl;
             exit(EXIT_FAILURE);
         }
         // fcntl() é uma chamada de sistema que manipula o descritor de arquivo
         // F_SETFL é uma operação que define o status do descritor de arquivo
         // O_NONBLOCK é uma flag que define o descritor de arquivo como não bloqueante
-        // Este statement é para garantir que o socket do servidor seja não bloqueante, que quer diz que ele não espera por uma resposta
+        // Este statement é para garantir que o socket do servidor seja não bloqueante
+        // Em um socket, isso significa que as operações de leitura e escrita (read e write) retornarão imediatamente,
+        // mesmo que a operação não possa ser completada imediatamente (em vez de bloquear a execução até que os dados estejam disponíveis ou possam ser enviados).
         if (fcntl(it->getServerFd(), F_SETFL, O_NONBLOCK) < 0)
         {
-            //Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: fcntl error: %s   Closing....", strerror(errno));
-            std::cerr << RED "webserv: fcntl error: " RESET << strerror(errno)<< std::endl;
+            std::cerr << RED "webserv: fcntl error" RESET << std::endl;
             exit(EXIT_FAILURE);
         }
         // addToSet adiciona o descritor de arquivo ao conjunto de descritores de arquivo
@@ -155,20 +157,20 @@ void    Webserv::initializeSets()
         _servers_map.insert(std::make_pair(it->getServerFd(), *it));
     }
     // _biggest_fd é o maior descritor de arquivo, que é o último descritor de arquivo adicionado ao conjunto de descritores de arquivo
-    _biggest_fd = _servers.back().getServerFd();
+    // _biggest_fd = _servers.back().getServerFd();
 }
 
 /* Aceita nova conexão de entrada, cria um novo objeto Cliente e o adiciona o cliente ao _clients_map e seu socket ao _recv_fd_pool */
 void    Webserv::openCliConnection(Server &serv)
 {
-    // sockaddr_in é uma estrutura que contém um endereço de internet
-    // client_address é uma estrutura que contém o endereço do cliente
-    struct sockaddr_in client_address;
-    long  client_address_size = sizeof(client_address);
-    int client_sock;
-    Client  new_client(serv);
-    // INET_ADDRSTRLEN é o tamanho máximo de uma string de endereço de internet
-    char    buf[INET_ADDRSTRLEN];
+	// sockaddr_in é uma estrutura que contém um endereço de internet
+	// client_address é uma estrutura que contém o endereço do cliente
+	struct sockaddr_in	client_address;
+	long				client_address_size = sizeof(client_address);
+	int					client_sock;
+	Client				new_client(serv);
+	// INET_ADDRSTRLEN é o tamanho máximo de uma string de endereço de internet
+	char				buf[INET_ADDRSTRLEN];
 
     // accept() é uma chamada de sistema que aceita uma conexão de entrada em um socket
     // O primeiro argumento é o descritor de arquivo do socket do servidor
@@ -178,10 +180,10 @@ void    Webserv::openCliConnection(Server &serv)
     if ( (client_sock = accept(serv.getServerFd(), (struct sockaddr *)&client_address,
      (socklen_t*)&client_address_size)) == -1)
     {
-        std::cerr << RED "webserv: client connection error: " RESET << strerror(errno)<< std::endl;
+        std::cerr << RED "webserv: client connection error" RESET << std::endl;
         return ;
     }
-    std::cout << CYAN "New Client Connection From " << inet_ntop(AF_INET, &client_address, buf, INET_ADDRSTRLEN) << 
+    std::cout << BLUE "New Client Connection From " << inet_ntop(AF_INET, &client_address, buf, INET_ADDRSTRLEN) << 
     " Assigned Socket " << client_sock << RESET << std::endl;
 
     // addToSet adiciona o descritor de arquivo ao conjunto de descritores de arquivo para leiura
@@ -231,7 +233,7 @@ void    Webserv::sendResponse(const int &i, Client &c)
 
     if (bytes_sent < 0)
     {
-        std::cerr << RED "webserv: error sending response: " RESET << strerror(errno)<< std::endl;
+        std::cerr << RED "webserv: error sending response" RESET << std::endl;
         closeCliConnection(i);
     }
     else if (bytes_sent == 0 || (size_t) bytes_sent == response.length())
@@ -257,16 +259,16 @@ void    Webserv::sendResponse(const int &i, Client &c)
 }
 
 /* Atribui a configuração do servidor a um cliente com base no cabeçalho Host na solicitação e no nome do servidor */
-void    Webserv::assignServerToClient(Client &c)
+void    Webserv::assignServerToClient(Client &client)
 {
     for (std::vector<Server>::iterator it = _servers.begin();
         it != _servers.end(); ++it)
     {
-        if (c.server.getHost() == it->getHost() &&
-            c.server.getPort() == it->getPort() &&
-            c.request.getServerName() == it->getServerName())
+        if (client.server.getHost() == it->getHost() &&
+            client.server.getPort() == it->getPort() &&
+            client.request.getServerName() == it->getServerName())
         {
-            c.setServer(*it);
+            client.setServer(*it);
             return ;
         }
     }
@@ -277,46 +279,47 @@ void    Webserv::assignServerToClient(Client &c)
  * - Se a requisição estiver completa, a resposta será construída e o socket será movido de _recv_fd_pool para _write_fd_pool
  * e a resposta enviada para a próxima iteração do select().
  */
-void    Webserv::readRequest(const int &i, Client &c)
+void    Webserv::readRequest(const int &i, Client &client)
 {
-    char    buffer[MESSAGE_BUFFER];
-    int     bytes_read = 0;
-    bytes_read = read(i, buffer, MESSAGE_BUFFER);
-    if (bytes_read == 0)
-    {
-        std::cout << YELLOW "Client " << i << " Closed Connection" RESET << std::endl;
-        closeCliConnection(i);
-        return ;
-    }
-    else if (bytes_read < 0)
-    {
-        std::cerr << RED "webserv: fd " << i << " read error " RESET  << strerror(errno) << std::endl;
-        closeCliConnection(i);
-        return ;
-    }
-    else if (bytes_read != 0)
-    {
-        c.updateTimeLastMessage();
-        c.request.feedRequest(buffer, bytes_read);
-        // Memset é uma função que preenche um bloco de memória com um valor específico
-        memset(buffer, 0, sizeof(buffer));
-    }
+	char	buffer[MESSAGE_BUFFER];
+	int		bytes_read = 0;
 
-    if (c.request.isParsed() || c.request.getErrorCode()) // 1 = parsing completed and we can work on the response.
-    {
-        assignServerToClient(c);
-        std::cout << CYAN "Request Recived From Socket " << i << ", Method=" << c.request.getMethodStr() << 
-        " URI=" << c.request.getPath() << RESET << std::endl;
-        c.buildResponse();
-        if (c.response.getCgiState())
-        {
-            handleRequestBody(c);
-            addToSet(c.response._cgi_obj.pipe_in[1],  _write_fd_pool);
-            addToSet(c.response._cgi_obj.pipe_out[0],  _recv_fd_pool);
-        }
-        removeFromSet(i, _recv_fd_pool);
-        addToSet(i, _write_fd_pool);
-    }
+	bytes_read = read(i, buffer, MESSAGE_BUFFER);
+	if (bytes_read == 0)
+	{
+		std::cout << YELLOW "Client " << i << " Closed Connection" RESET << std::endl;
+		closeCliConnection(i);
+		return ;
+	}
+	else if (bytes_read < 0)
+	{
+		std::cerr << RED "webserv: fd " << i << " read error " RESET << std::endl;
+		closeCliConnection(i);
+		return ;
+	}
+	else if (bytes_read != 0)
+	{
+		client.updateTimeLastMessage();
+		client.request.feedRequest(buffer, bytes_read);
+		// Memset é uma função que preenche um bloco de memória com um valor específico
+		memset(buffer, 0, sizeof(buffer));
+	}
+
+	if (client.request.isParsed() || client.request.getErrorCode()) // 1 = parsing completed and we can work on the response.
+	{
+		assignServerToClient(client);
+		std::cout << CYAN "Request Recived From Socket " << i << ", Method=" << client.request.getMethodStr() << 
+		" URI=" << client.request.getPath() << RESET << std::endl;
+		client.buildResponse();
+		if (client.response.getCgiState())
+		{
+			handleRequestBody(client);
+			addToSet(client.response._cgi_obj.pipe_in[1],  _write_fd_pool);
+			addToSet(client.response._cgi_obj.pipe_out[0],  _recv_fd_pool);
+		}
+		removeFromSet(i, _recv_fd_pool);
+		addToSet(i, _write_fd_pool);
+	}
 }
 
 // Se o corpo da requisição estiver vazio, ele será preenchido com o conteúdo do arquivo
@@ -393,7 +396,7 @@ void    Webserv::readCgiResponse(Client &c, Cgi &cgi)
     }
     else if (bytes_read < 0)
     {
-        std::cerr << RED "webserv: error reading from CGI script: " RESET << strerror(errno)<< std::endl;
+        std::cerr << RED "webserv: error reading from CGI script" RESET << std::endl;
         removeFromSet(cgi.pipe_out[0], _recv_fd_pool);
         close(cgi.pipe_in[0]);
         close(cgi.pipe_out[0]);

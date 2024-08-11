@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 21:44:38 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 00:43:09 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:32:25 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,17 @@
 #include "ConfFile.hpp"
 #include "Server.hpp"
 
-
 class Location
 {
 	public:
-
-		// Constructors and Destructor
 		Location();
 		Location(const Location &other);
 		Location &operator=(const Location &rhs);
 		~Location();
-       
-	    // Methods
-	    int         isValidLocation(std::string &serverRoot);
-        std::string	printMethods() const;
 
-		// Getters and Setters
+		int			 isValidLocation(std::string &serverRoot);
+		std::string	printMethods() const;
+
 		void setPath(std::string param);
 		void setRootLocation(std::string param);
 		void setMethods(std::vector<std::string> methods);

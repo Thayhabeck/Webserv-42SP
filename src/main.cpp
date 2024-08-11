@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:52:58 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 01:13:29 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/10 17:09:19 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,24 +22,24 @@ int main(int argc, char **argv)
 		try 
 		{
 			signal(SIGPIPE, sigpipeHandle);
-			ServerConf      server_config;
-        	Webserv         webserv;
+			ServerConf	server_config;
+			Webserv		webserv;
 			std::string conf_file = (argc == 1 ? "./conf/default.conf" : argv[1]);
 			server_config.createServerPool(conf_file);
 			server_config.printServersConf(); // debug
 			webserv.initServers(server_config.getServerPool());
 			webserv.runServers();
 		}
-		catch (std::exception &e) {
+		catch (std::exception &e)
+		{
 			std::cerr << e.what() << std::endl;
 			return (1);
 		}
-    }
-    else 
+	}
+	else 
 	{
-        std::cerr << "Error: wrong arguments" << std::endl;
+		std::cerr << "Error: wrong arguments" << std::endl;
 		return (1);
 	}
-    return (0);
+	return (0);
 }
-

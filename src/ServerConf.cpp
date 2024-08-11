@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConf.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 20:54:50 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/09 23:28:39 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/10 18:29:15 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ int ServerConf::createServerPool(const std::string &config_file)
 		this->_servers.push_back(server);
 	}
 	if (this->_nb_server > 1)
-		checkServersParams();
+		checkCompareServersParams();
 	return (0);
 }
 
@@ -227,9 +227,9 @@ void ServerConf::createServer(std::string &config, Server &server)
 	std::vector<std::string>	params;
 	std::vector<std::string>	error_codes;
 	// Flag para verificar se o parâmetro 'location' foi encontrado e preenchido corretamente
-	int		flag_loc = 1;
-	bool	flag_autoindex = false;
-	bool	flag_max_size = false;
+	int		is_setted_location = 1;
+	bool	is_setted_autoindex = false;
+	bool	is_setted_max_size = false;
 
 	// Separa os parâmetros do servidor em um vetor de strings
 	params = splitStrParams(config += ' ', std::string(" \n\t"));
@@ -238,45 +238,25 @@ void ServerConf::createServer(std::string &config, Server &server)
 	for (size_t i = 0; i < params.size(); i++)
 	{
 		// Verifica se a porta já existe em outro server e seta a porta se não existir
-		if (params[i] == "listen" && (i + 1) < params.size() && flag_loc)
+		if (params[i] == "listen" && (i + 1) < params.size() && is_setted_location)
 		{
 			if (server.getPort())
 				throw  ServerConfigErrorException("Duplicated parameter 'Port'");
 			server.setPort(params[++i]);
 		}
-		// Verifica se o parâmetro 'location' foi encontrado e preenchido corretamente, 
-		else if (params[i] == "location" && (i + 1) < params.size())
-		{
-			std::string	path;
-			i++;
-			if (params[i] == "{" || params[i] == "}")
-				throw  ServerConfigErrorException("location scope contains a character not allowed");
-			path = params[i];
-			std::vector<std::string> codes;
-			if (params[++i] != "{")
-				throw  ServerConfigErrorException("location scope contains a character not allowed");
-			i++;
-			while (i < params.size() && params[i] != "}")
-				codes.push_back(params[i++]);
-			//setLocation irá adicionar a localização ao vetor de localizações do servidor
-			server.setLocation(path, codes);
-			if (i < params.size() && params[i] != "}")
-				throw  ServerConfigErrorException("location scope contains a character not allowed");
-			flag_loc = 0;
-		}
-		else if (params[i] == "host" && (i + 1) < params.size() && flag_loc)
+		else if (params[i] == "host" && (i + 1) < params.size() && is_setted_location)
 		{
 			if (server.getHost())
 				throw  ServerConfigErrorException("Duplicate parameter 'Host'");
 			server.setHost(params[++i]);
 		}
-		else if (params[i] == "root" && (i + 1) < params.size() && flag_loc)
+		else if (params[i] == "root" && (i + 1) < params.size() && is_setted_location)
 		{
 			if (!server.getRoot().empty())
 				throw  ServerConfigErrorException("Duplicate parameter 'Root'");
 			server.setRoot(params[++i]);
 		}
-		else if (params[i] == "error_page" && (i + 1) < params.size() && flag_loc)
+		else if (params[i] == "error_page" && (i + 1) < params.size() && is_setted_location)
 		{
 			while (++i < params.size())
 			{
@@ -286,37 +266,57 @@ void ServerConf::createServer(std::string &config, Server &server)
 				if (i + 1 >= params.size())
 					throw ServerConfigErrorException("Error Page scope contains a character not allowed");
 			}
-            server.setErrorPages(error_codes);
+			server.setErrorPages(error_codes);
 		}
-		else if (params[i] == "client_max_body_size" && (i + 1) < params.size() && flag_loc)
+		else if (params[i] == "client_max_body_size" && (i + 1) < params.size() && is_setted_location)
 		{
-			if (flag_max_size)
+			if (is_setted_max_size)
 				throw  ServerConfigErrorException("Duplicated parameter 'Max Body Size'");
 			server.setClientMaxBodySize(params[++i]);
-			flag_max_size = true;
+			is_setted_max_size = true;
 		}
-		else if (params[i] == "server_name" && (i + 1) < params.size() && flag_loc)
+		else if (params[i] == "server_name" && (i + 1) < params.size() && is_setted_location)
 		{
 			if (!server.getServerName().empty())
 				throw  ServerConfigErrorException("Duplicated parameter 'Server Name'");
 			server.setServerName(params[++i]);
 		}
-		else if (params[i] == "index" && (i + 1) < params.size() && flag_loc)
+		else if (params[i] == "index" && (i + 1) < params.size() && is_setted_location)
 		{
 			if (!server.getIndex().empty())
 				throw  ServerConfigErrorException("Duplicated parameter 'Index'");
 			server.setIndex(params[++i]);
 		}
-		else if (params[i] == "autoindex" && (i + 1) < params.size() && flag_loc)
+		else if (params[i] == "autoindex" && (i + 1) < params.size() && is_setted_location)
 		{
-			if (flag_autoindex)
+			if (is_setted_autoindex)
 				throw ServerConfigErrorException("Duplicated parameter 'Autoindex'");
 			server.setAutoindex(params[++i]);
-			flag_autoindex = true;
+			is_setted_autoindex = true;
+		}
+		// Verifica se o parâmetro 'location' foi encontrado e preenchido corretamente, 
+		else if (params[i] == "location" && (i + 1) < params.size())
+		{
+			std::string	path;
+			i++;
+			if (params[i] == "{" || params[i] == "}")
+				throw  ServerConfigErrorException("location scope contains a character not allowed");
+			path = params[i];
+			std::vector<std::string> location_params;
+			if (params[++i] != "{")
+				throw  ServerConfigErrorException("location scope contains a character not allowed");
+			i++;
+			while (i < params.size() && params[i] != "}")
+				location_params.push_back(params[i++]);
+			//setLocation irá adicionar a localização ao vetor de localizações do servidor
+			server.setLocation(path, location_params);
+			if (i < params.size() && params[i] != "}")
+				throw  ServerConfigErrorException("location scope contains a character not allowed");
+			is_setted_location = 0;
 		}
 		else if (params[i] != "}" && params[i] != "{")
 		{
-			if (!flag_loc)
+			if (!is_setted_location)
 				throw  ServerConfigErrorException("Has a parameter after location");
 			else
 				throw  ServerConfigErrorException("Unsupported directive");
@@ -355,7 +355,7 @@ int	ServerConf::strCompare(std::string str1, std::string str2, size_t pos)
 }
 
 /* Checar redundância de parâmetros */
-void ServerConf::checkServersParams()
+void ServerConf::checkCompareServersParams()
 {
 	std::vector<Server>::iterator it1;
 	std::vector<Server>::iterator it2;

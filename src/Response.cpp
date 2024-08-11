@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 19:09:17 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 01:07:07 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:22:56 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,11 +119,6 @@ int Response::handleCgiTemp(std::string &location_key)
     _cgi_obj.clearCgiEnv();
     _cgi_obj.setCgiPath(path);
     _cgi = 1;
-    if (pipe(_cgi_fd) < 0)
-    {
-        _code = 500;
-        return (1);
-    }
     _cgi_obj.initGenericCgiEnv(request, _server.getLocationKey(location_key)); // + URI
     _cgi_obj.cgiExec(this->_code);
     return (0);
@@ -209,11 +204,6 @@ int        Response::handleCgi(std::string &location_key)
     _cgi_obj.clearCgiEnv();
     _cgi_obj.setCgiPath(path);
     _cgi = 1;
-    if (pipe(_cgi_fd) < 0)
-    {
-        _code = 500;
-        return (1);
-    }
     _cgi_obj.initCgiEnv(request, _server.getLocationKey(location_key));
     _cgi_obj.cgiExec(this->_code);
     return (0);
@@ -254,7 +244,7 @@ int    Response::handleTarget()
 
         if (isAllowedMethod(request.getMethod(), target_location, _code))
         {
-            std::cout << "METHOD NOT ALLOWED \n";
+            std::cout << RED "METHOD NOT ALLOWED" RESET << std::endl;
             return (1);
         }
         if (request.getBody().length() > target_location.getMaxBodySize())
@@ -264,28 +254,16 @@ int    Response::handleTarget()
         }
         if (checkLocationReturn(target_location, _code, _location))
             return (1);
-
 		if (target_location.getPath().find("cgi-bin") != std::string::npos)
-		{
             return (handleCgi(location_key));
-		}
-
         if (!target_location.getAlias().empty())
-        {
             replaceLocationAlias(target_location, request, _target_file);
-        }
         else
             appendRoot(target_location, request, _target_file);
 
-        if (!target_location.getCgiExtension().empty())
-        {
-
-            if (_target_file.rfind(target_location.getCgiExtension()[0]) != std::string::npos)
-            {
-                return (handleCgiTemp(location_key));
-            }
-
-        }
+        if ((!target_location.getCgiExtension().empty())
+         && (_target_file.rfind(target_location.getCgiExtension()[0]) != std::string::npos))
+            return (handleCgiTemp(location_key));
         if (isDirectory(_target_file))
         {
             if (_target_file[_target_file.length() - 1] != '/')
@@ -493,9 +471,9 @@ int    Response::buildResponseBody()
         if (readFile())
             return (1);
     }
-     else if (request.getMethod() == POST)
+    else if (request.getMethod() == POST)
     {
-        if (fileExists(_target_file) && request.getMethod() == POST)
+        if (fileExists(_target_file))
         {
             _code = 204;
             return (0);
@@ -506,7 +484,6 @@ int    Response::buildResponseBody()
             _code = 404;
             return (1);
         }
-
         if (request.getUploadFlag())
         {
             std::string body = request.getBody();
@@ -514,9 +491,7 @@ int    Response::buildResponseBody()
             file.write(body.c_str(), body.length());
         }
         else
-        {
             file.write(request.getBody().c_str(), request.getBody().length());
-        }
     }
     else if (request.getMethod() == DELETE)
     {
@@ -605,9 +580,7 @@ std::string Response::removeUploadBoundary(std::string &body, std::string &bound
                 is_boundary = false;
             }
             if (!buffer.compare(("--" + boundary + "\r")))
-            {
                 is_boundary = true;
-            }
             if (is_boundary)
             {
                 if (!buffer.compare(0, 31, "Content-Disposition: form-data;"))
@@ -630,9 +603,7 @@ std::string Response::removeUploadBoundary(std::string &body, std::string &bound
             else if (is_content)
             {
                 if (!buffer.compare(("--" + boundary + "\r")))
-                {
                     is_boundary = true;
-                }
                 else if (!buffer.compare(("--" + boundary + "--\r")))
                 {
                     new_body.erase(new_body.end() - 1);
@@ -641,7 +612,6 @@ std::string Response::removeUploadBoundary(std::string &body, std::string &bound
                 else
                     new_body += (buffer + "\n");
             }
-
         }
     }
 

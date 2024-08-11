@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 22:58:44 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/09 23:25:36 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/10 19:13:38 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,6 @@ Server &Server::operator=(const Server & rhs)
 /* Inicia as páginas de erro padrão */
 void Server::initErrorPages(void)
 {
-	_error_pages[301] = "";
-	_error_pages[302] = "";
 	_error_pages[400] = "";
 	_error_pages[401] = "";
 	_error_pages[402] = "";
@@ -207,11 +205,11 @@ void Server::setErrorPages(std::vector<std::string> &param)
 /* Checa e seta as locations */
 void Server::setLocation(std::string path, std::vector<std::string> param)
 {
-	Location new_location;
-	std::vector<std::string> methods;
-	bool flag_methods = false;
-	bool flag_autoindex = false;
-	bool flag_max_size = false;
+	Location                    new_location;
+	std::vector<std::string>    methods;
+	bool is_setted_methods = false;
+	bool is_setted_autoindex = false;
+	bool is_setted_max_size = false;
 	int valid;
 
 	new_location.setPath(path);
@@ -229,7 +227,7 @@ void Server::setLocation(std::string path, std::vector<std::string> param)
 		}
 		else if ((param[i] == "allow_methods" || param[i] == "methods") && (i + 1) < param.size())
 		{
-			if (flag_methods)
+			if (is_setted_methods)
 				throw ServerConfigErrorException("Allow_methods of location is duplicated");
 			std::vector<std::string> methods;
 			while (++i < param.size())
@@ -248,17 +246,17 @@ void Server::setLocation(std::string path, std::vector<std::string> param)
 				}
 			}
 			new_location.setMethods(methods);
-			flag_methods = true;
+			is_setted_methods = true;
 		}
 		else if (param[i] == "autoindex" && (i + 1) < param.size())
 		{
 			if (path == "/cgi-bin")
 				throw ServerConfigErrorException("Param autoindex not allow for CGI");
-			if (flag_autoindex)
+			if (is_setted_autoindex)
 				throw ServerConfigErrorException("Autoindex of location is duplicated");
 			checkToken(param[++i]);
 			new_location.setAutoindex(param[i]);
-			flag_autoindex = true;
+			is_setted_autoindex = true;
 		}
 		else if (param[i] == "index" && (i + 1) < param.size())
 		{
@@ -329,18 +327,19 @@ void Server::setLocation(std::string path, std::vector<std::string> param)
 		}
 		else if (param[i] == "client_max_body_size" && (i + 1) < param.size())
 		{
-			if (flag_max_size)
+			if (is_setted_max_size)
 				throw ServerConfigErrorException("Maxbody_size of location is duplicated");
 			checkToken(param[++i]);
 			new_location.setMaxBodySize(param[i]);
-			flag_max_size = true;
+			is_setted_max_size = true;
 		}
 		else if (i < param.size())
 			throw ServerConfigErrorException("Param in a location is invalid");
 	}
+    // Se um path que não é cgi não tem index. Usar o Index do servidor na location
 	if (new_location.getPath() != "/cgi-bin" && new_location.getIndexLocation().empty())
 		new_location.setIndexLocation(this->_index);
-	if (!flag_max_size)
+	if (!is_setted_max_size)
 		new_location.setMaxBodySize(this->_client_max_body_size);
 	valid = new_location.isValidLocation(this->_root);
 	if (valid == 1)
@@ -486,8 +485,7 @@ void	Server::setupServer(void)
 	// O terceiro argumento é o protocolo. 0 significa que o sistema escolherá o protocolo mais apropriado.
 	if ((_listen_fd = socket(AF_INET, SOCK_STREAM, 0) )  == -1 )
     {
-		//Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
-        std::cerr << RED "webserv: socket error: " RESET << strerror(errno) << std::endl;
+        std::cerr << RED "webserv: socket error" RESET << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -500,7 +498,6 @@ void	Server::setupServer(void)
 	// O quinto argumento é o tamanho do valor da opção.
     setsockopt(_listen_fd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(int));
 	// A função memset() preenche uma área de memória com um byte específico.
-	// Substituir esta função
     memset(&_server_address, 0, sizeof(_server_address));
     _server_address.sin_family = AF_INET;
     _server_address.sin_addr.s_addr = _host;
@@ -511,7 +508,6 @@ void	Server::setupServer(void)
 	// O terceiro argumento é o tamanho da estrutura sockaddr.
     if (bind(_listen_fd, (struct sockaddr *) &_server_address, sizeof(_server_address)) == -1)
     {
-		//Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
         std::cerr << RED "webserv: bind error: " RESET << strerror(errno) << std::endl;
         exit(EXIT_FAILURE);
     }

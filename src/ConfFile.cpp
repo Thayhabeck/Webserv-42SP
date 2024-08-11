@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ConfFile.cpp                                     :+:      :+:    :+:   */
+/*   ConfFile.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 18:33:05 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/07 20:30:42 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/10 15:53:37 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ ConfFile::ConfFile() : _size(0) { }
 ConfFile::ConfFile(std::string const path) : _path(path), _size(0) { }
 
 ConfFile::~ConfFile() { }
-
 
 /* Define se o caminho é um arquivo (1), diretório (2) ou outra coisa (3) */
 int ConfFile::getPathType(std::string const path)

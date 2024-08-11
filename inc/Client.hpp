@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 22:44:33 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 00:41:52 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:30:42 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,39 +22,33 @@
  * Cada Cliente também armazena o servidor ao qual está conectado. **/
 class Client
 {
-    public:
-
-        // Construtores e Destrutor
-        Client();
-        Client(const Client &other);
-        Client(Server &);
+	public:
+		Client();
+		Client(const Client &other);
+		Client(Server &);
 		Client &operator=(const Client & rhs);
-        ~Client();
+		~Client();
 
-        // Métodos
-        void                        buildResponse();
-        void                        updateTimeLastMessage();
-        void                        clearClient();
+		void						buildResponse();
+		void						updateTimeLastMessage();
+		void						clearClient();
 
-        // Getters e Setters
-        const int                   &getSocket() const;
-        const struct sockaddr_in    &getAddress() const;
-        const Request               &getRequest() const;
-        const time_t                &getTimeLastMessage() const;
-        void                        setSocket(int &);
-        void                        setAddress(sockaddr_in &);
-        void                        setServer(Server &);
+		const int					&getSocket() const;
+		const struct sockaddr_in	&getAddress() const;
+		const Request				&getRequest() const;
+		const time_t				&getTimeLastMessage() const;
+		void						setSocket(int &);
+		void						setAddress(sockaddr_in &);
+		void						setServer(Server &);
 
-        Response            response;
-        Request             request;
-        Server              server;
-        
-    private:
-    
-        int                 _cli_socket;
-        struct sockaddr_in  _cli_address;
-        time_t              _cli_last_msg;
+		Response	response;
+		Request		request;
+		Server		server;
+
+	private:
+		int					_cli_socket;
+		struct sockaddr_in	_cli_address;
+		time_t				_cli_last_msg;
 };
-
 
 #endif

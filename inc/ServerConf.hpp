@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConf.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 20:24:13 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 00:44:48 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:42:33 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,18 @@ class Server;
 class ServerConf {
 	private:
 		std::vector<std::string>	_server_config;
-		std::vector<Server>	        _servers;
+		std::vector<Server>			_servers;
 		size_t						_nb_server;
 
 	public:
-
 		ServerConf();
 		~ServerConf();
 
-		// Methods
 		int					createServerPool(const std::string &config_file);
 		void				rmComments(std::string &content);
 		void				rmSpaces(std::string &content);
 		void				createServer(std::string &config, Server &server);
-		void				checkServersParams();
+		void				checkCompareServersParams();
 		void				splitServerConfStr(std::string &content);
 		int					strCompare(std::string str1, std::string str2, size_t pos);
 		int					printServersConf();
@@ -42,7 +40,6 @@ class ServerConf {
 		size_t				getServerEndPosition(size_t start, std::string &content);
 		std::vector<Server>	getServerPool();
 
-		// Exception
 		public:
 		class ServerConfigErrorException : public std::exception
 		{

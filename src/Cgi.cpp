@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 18:56:27 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/09 23:25:48 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/11 13:44:40 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void Cgi::initGenericCgiEnv(Request& req, const std::vector<Location>::iterator 
     this->_env["REQUEST_METHOD"] = req.getMethodStr();
     this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
     this->_env["REDIRECT_STATUS"] = "200";
-	this->_env["SERVER_SOFTWARE"] = "MathayWeebserv";
+	this->_env["SERVER_SOFTWARE"] = "MathayWebserv";
 
 	std::map<std::string, std::string> request_headers = req.getHeaders();
 	for(std::map<std::string, std::string>::iterator it = request_headers.begin();
@@ -165,7 +165,7 @@ void Cgi::initGenericCgiEnv(Request& req, const std::vector<Location>::iterator 
 */
 void Cgi::initCgiEnv(Request& req, const std::vector<Location>::iterator it_loc)
 {
-	int			poz;
+	int			position;
 	std::string extension;
 	std::string ext_path;
 
@@ -179,23 +179,23 @@ void Cgi::initCgiEnv(Request& req, const std::vector<Location>::iterator it_loc)
 	this->_env["CONTENT_LENGTH"] = req.getHeader("content-length");
 	this->_env["CONTENT_TYPE"] = req.getHeader("content-type");
     this->_env["GATEWAY_INTERFACE"] = "CGI/1.1";
-	poz = findStart(this->_cgi_path, "cgi-bin/");
+	position = findStart(this->_cgi_path, "cgi-bin/");
 	this->_env["SCRIPT_NAME"] = this->_cgi_path;
-    this->_env["SCRIPT_FILENAME"] = ((poz < 0 || (size_t)(poz + 8) > this->_cgi_path.size()) ? "" : this->_cgi_path.substr(poz + 8, this->_cgi_path.size())); // check dif cases after put right parametr from the response
+    this->_env["SCRIPT_FILENAME"] = ((position < 0 || (size_t)(position + 8) > this->_cgi_path.size()) ? "" : this->_cgi_path.substr(position + 8, this->_cgi_path.size())); // check dif cases after put right parametr from the response
     this->_env["PATH_INFO"] = getPathInfo(req.getPath(), it_loc->getCgiExtension());
     this->_env["PATH_TRANSLATED"] = it_loc->getRootLocation() + (this->_env["PATH_INFO"] == "" ? "/" : this->_env["PATH_INFO"]);
     this->_env["QUERY_STRING"] = extractCgiEnv(req.getQuery());
     this->_env["REMOTE_ADDR"] = req.getHeader("host");
-	poz = findStart(req.getHeader("host"), ":");
-    this->_env["SERVER_NAME"] = (poz > 0 ? req.getHeader("host").substr(0, poz) : "");
-    this->_env["SERVER_PORT"] = (poz > 0 ? req.getHeader("host").substr(poz + 1, req.getHeader("host").size()) : "");
+	position = findStart(req.getHeader("host"), ":");
+    this->_env["SERVER_NAME"] = (position > 0 ? req.getHeader("host").substr(0, position) : "");
+    this->_env["SERVER_PORT"] = (position > 0 ? req.getHeader("host").substr(position + 1, req.getHeader("host").size()) : "");
     this->_env["REQUEST_METHOD"] = req.getMethodStr();
     this->_env["HTTP_COOKIE"] = req.getHeader("cookie");
     this->_env["DOCUMENT_ROOT"] = it_loc->getRootLocation();
 	this->_env["REQUEST_URI"] = req.getPath() + req.getQuery();
     this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
     this->_env["REDIRECT_STATUS"] = "200";
-	this->_env["SERVER_SOFTWARE"] = "MathayWeebserv";
+	this->_env["SERVER_SOFTWARE"] = "MathayWebserv";
 
 	this->_ch_env = (char **)calloc(sizeof(char *), this->_env.size() + 1);
 	std::map<std::string, std::string>::const_iterator it = this->_env.begin();

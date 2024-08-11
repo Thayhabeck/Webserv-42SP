@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 21:54:03 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 02:08:06 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/11 01:13:21 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,8 @@ inline bool isToken(uint8_t ch)
 * para extrair as informações da requisição passo a passo */
 void Request::feedRequest(char *data, size_t size)
 {
-    u_int8_t character;
-    static std::stringstream s;
+    u_int8_t                    character;
+    static std::stringstream    s;
 
     for (size_t i = 0; i < size; ++i)
     {
@@ -109,7 +109,6 @@ void Request::feedRequest(char *data, size_t size)
                     std::cout << RED "Request Error: Method not implemented" RESET << std::endl;
                     return ;
                 }
-
                 if ((size_t) _method_index == _method_str[_method].length())
                     _state = Request_Line_First_Space;
                 break ;

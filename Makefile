@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+         #
+#    By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/29 13:51:09 by thabeck-          #+#    #+#              #
-#    Updated: 2024/08/10 09:14:41 by matcardo         ###   ########.fr        #
+#    Updated: 2024/08/12 23:59:23 by thabeck-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,23 @@ $(NAME): 	$(OBJ)
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 	@printf "$(GR)Done!$(RC)\n"
 
-all:	$(NAME)
+# Nova regra para adicionar o server_name ao arquivo hosts
+update_hosts:
+	@if ! grep -q "127.0.0.1 catarmy" /etc/hosts; then \
+		echo "127.0.0.1 catarmy" | sudo tee -a /etc/hosts; \
+		echo "$(CY)Server name catsarmy added to /etc/hosts$(RC)"; \
+	else \
+		echo "$(CY)Server name catsarmy already exists in /etc/hosts$(RC)"; \
+	fi
+	@if ! grep -q "127.0.0.1 cucumberarmy" /etc/hosts; then \
+		echo "127.0.0.1 cucumberarmy" | sudo tee -a /etc/hosts; \
+		echo "$(CY)Server name cucumberarmy added to /etc/hosts$(RC)"; \
+	else \
+		echo "$(CY)Server name cucumberarmy already exists in /etc/hosts$(RC)"; \
+	fi
+
+# Altere a regra all para depender de update_hosts
+all:	update_hosts $(NAME)
 
 re:		fclean all
 
@@ -58,4 +74,4 @@ fclean:		clean
 	@$(RM) $(NAME)
 	@printf "$(RE)$(NAME) removed!$(RC)\n"
 
-.PHONY:		all clean fclean re
+.PHONY:		all clean fclean re update_hosts

@@ -13,14 +13,15 @@
             <nav class="nav">
                 <a class="nav_link" href="about.html">About US</a>
                 <a class="nav_link" href="join_us.html">JOIN US</a>
-                <a class="nav_link" href="docs.html">DOCS</a>
+                <a class="nav_link" href="/docs">DOCS</a>
+                <a class="nav_link" href="/cgi-bin">CGI</a>
                 <a class="nav_link" href="confidential_no_permission.html">confidential</a>
             </nav>
         </div>
     </header>
     <div class="banner">
         <div></div>
-        <form class="upload_form">
+        <form class="upload_form"  enctype="multipart/form-data" action = "../../cgi-bin/upload.py" method="post" >
             <label>Upload your docs: </label>
             <input type="file" name="filename" class="file">
             <input type="submit" value="SEND" href="#" class="send_button">

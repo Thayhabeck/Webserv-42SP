@@ -6,7 +6,7 @@
 /*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 18:17:55 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 00:55:06 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/13 15:23:21 by thabeck-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,19 +199,31 @@ int getAutoIndexPage(std::string &dir_name, std::vector<uint8_t> &body, size_t &
         std::cerr << "opendir failed" << std::endl;
         return (1);
     }
-    dirListPage.append("<html>\n");
+    dirListPage.append("<html lang=\"en\">\n");
+
     dirListPage.append("<head>\n");
-    dirListPage.append("<title> Index of");
-    dirListPage.append(dir_name);
-    dirListPage.append("</title>\n");
+    dirListPage.append("<meta charset=\"UTF-8\">\n");
+    dirListPage.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
+    dirListPage.append("<link rel=\"stylesheet\" href=\"css/docs.css\">\n");
+    dirListPage.append("<title>Docs - Cats Army</title>\n");
     dirListPage.append("</head>\n");
-    dirListPage.append("<body >\n");
-    dirListPage.append("<h1> Index of " + dir_name + "</h1>\n");
-    dirListPage.append("<table style=\"width:80%; font-size: 15px\">\n");
-    dirListPage.append("<hr>\n");
-    dirListPage.append("<th style=\"text-align:left\"> File Name </th>\n");
-    dirListPage.append("<th style=\"text-align:left\"> Last Modification  </th>\n");
-    dirListPage.append("<th style=\"text-align:left\"> File Size </th>\n");
+
+    dirListPage.append("<body>\n");
+
+    dirListPage.append("<header class=\"header\"><div class =\"header_container\"><a class = \"nav_link\" href=\"/\">Cats Army</a>\n");
+    dirListPage.append("<nav class=\"nav\">\n");
+    dirListPage.append("<a class=\"nav_link\" href=\"/\">About US</a>\n");
+    dirListPage.append("<a class=\"nav_link\" href=\"/\">JOIN US</a>\n");
+    dirListPage.append("<a class=\"nav_link\" href=\"/docs\">DOCS</a>\n");
+    dirListPage.append("<a class=\"nav_link\" href=\"/cgi-bin\">CGI</a>\n");
+    dirListPage.append("<a class=\"nav_link\" href=\"confidential_no_permission.html\">confidential</a>\n");
+    dirListPage.append("</nav></div></header>\n");
+    dirListPage.append("<div class=\"banner\">\n");
+
+    dirListPage.append("<div></div>\n");
+    dirListPage.append("<table class=\"styled-table\">\n");
+    dirListPage.append("<thead><tr><th>File Name</th><th>Last Modification</th><th>File Size</th><th>Action</th></tr></thead>\n");
+    dirListPage.append("<tbody>\n");
 
     struct stat file_stat;
     std::string file_path;
@@ -222,7 +234,12 @@ int getAutoIndexPage(std::string &dir_name, std::vector<uint8_t> &body, size_t &
             continue;
         file_path = dir_name + entityStruct->d_name;
         stat(file_path.c_str() , &file_stat);
-        dirListPage.append("<tr>\n");
+    
+        dirListPage.append("<tr id=\"");
+        dirListPage.append(entityStruct->d_name);
+        dirListPage.append("\">\n");
+
+        // First column
         dirListPage.append("<td>\n");
         dirListPage.append("<a href=\"");
         dirListPage.append(entityStruct->d_name);
@@ -234,25 +251,60 @@ int getAutoIndexPage(std::string &dir_name, std::vector<uint8_t> &body, size_t &
             dirListPage.append("/");
         dirListPage.append("</a>\n");
         dirListPage.append("</td>\n");
+
+        // Second column
         dirListPage.append("<td>\n");
         dirListPage.append(ctime(&file_stat.st_mtime));
         dirListPage.append("</td>\n");
+
+        // Third column
         dirListPage.append("<td>\n");
         if (!S_ISDIR(file_stat.st_mode))
             dirListPage.append(toString(file_stat.st_size));
         dirListPage.append("</td>\n");
+        
+        // Fourth column
+        // Delete here
+        dirListPage.append("<td>\n");
+        if (!S_ISDIR(file_stat.st_mode))
+        {
+            dirListPage.append("<button class=\"delete-button\" onclick=\"deleteDoc('");
+            dirListPage.append(entityStruct->d_name);
+            dirListPage.append("')\">Delete</button>");
+        }
+        dirListPage.append("</td>\n");
+
         dirListPage.append("</tr>\n");
     }
+    dirListPage.append("</tbody>\n");
     dirListPage.append("</table>\n");
-    dirListPage.append("<hr>\n");
 
+    dirListPage.append("<footer><p><span class=\"highlight\">&#169; 2024 by WebServ thabeck- matcardo</p></footer>\n");
+    dirListPage.append("</div>\n");
+    dirListPage.append("<script>\n");
+    dirListPage.append("function deleteDoc(docId) {\n");
+    dirListPage.append("const docElement = document.getElementById(docId);\n");
+    dirListPage.append("const docUrl = `http://127.0.0.1:8002/docs/${docId}`;\n");
+    dirListPage.append("fetch(docUrl, {\n");
+    dirListPage.append("method: 'DELETE',\n");
+    dirListPage.append("}).then(response => {\n");
+    dirListPage.append("if (response.ok) {\n");
+    dirListPage.append("docElement.remove();\n");
+    dirListPage.append("} else {\n");
+    dirListPage.append("console.error('Failed to delete document');\n");
+    dirListPage.append("}\n");
+    dirListPage.append("}).catch(error => console.error('Error deleting document:', error));\n");
+    dirListPage.append("}\n");
+    dirListPage.append("</script>\n");
     dirListPage.append("</body>\n");
     dirListPage.append("</html>\n");
 
     body.insert(body.begin(), dirListPage.begin(), dirListPage.end());
     body_len = body.size();
+    closedir(directory); // Fechar o diretório após a leitura
     return (0);
 }
+
 
 // Checa se a URI passada é válida, ou seja, não possui caminho que vai antes da raiz
 bool    checkUriPos(std::string path)

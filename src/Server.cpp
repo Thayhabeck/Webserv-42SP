@@ -6,7 +6,7 @@
 /*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 22:58:44 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 17:30:37 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/13 15:39:48 by thabeck-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void Server::initErrorPages(void)
 	_error_pages[403] = "";
 	_error_pages[404] = "";
 	_error_pages[405] = "";
-	_error_pages[406] = "";
+	_error_pages[413] = "";
 	_error_pages[500] = "";
 	_error_pages[501] = "";
 	_error_pages[502] = "";

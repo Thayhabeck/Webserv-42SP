@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 19:09:17 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 14:22:56 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 19:14:40 by thabeck-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,6 +230,8 @@ static void    getLocationMatch(std::string &path, std::vector<Location> locatio
                }
         }
     }
+    if (path != "/" && location_key == "/")
+        location_key = "";
 }
 
 /* Manipula o arquivo de destino, verifica se é um diretório, se for um diretório, 
@@ -348,7 +350,7 @@ bool Response::requestError()
 void Response::buildErrorBody()
 {
         if( !_server.getErrorPages().count(_code) || _server.getErrorPages().at(_code).empty() ||
-         request.getMethod() == DELETE || request.getMethod() == POST)
+         request.getMethod() == DELETE)
         {
             // Insere a página de erro padrão que é uma página HTML com o código de erro e a mensagem de erro
             setServerDefaultErrorPages();

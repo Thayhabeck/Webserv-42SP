@@ -1,0 +1,44 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.display {
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position-y: 100%;
+}
+
+.e400 {
+    background: url(./images/400.png) center no-repeat;
+}
+
+.e403 {
+    background: url(./images/403.png) center no-repeat;
+}
+
+.e404 {
+    background: url(./images/404.png) center no-repeat;
+}
+
+.e405 {
+    background: url(./images/405.png) center no-repeat;
+}
+
+.e500 {
+    background: url(./images/500.png) center no-repeat;
+}
+
+.e505 {
+    background: url(./images/505.png) center no-repeat;
+}

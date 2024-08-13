@@ -1,0 +1,85 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;   
+    font-size: 15px;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+}
+
+.banner {
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100vh;
+    background: url(../images/cats_about.png) center no-repeat;
+    background-size: cover;
+    background-position-y: 100%;
+}
+
+.header {
+    display: block;
+    width: 100%;
+    padding-top: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #1C300DCC;
+}
+
+.header_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 36px;
+    text-transform: uppercase;
+}
+
+/*Navigation button*/
+.nav {
+    font-size: 24px;
+}
+
+.nav_link {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 24px;
+    position: relative;
+    color: grey;
+    text-decoration: none;
+    transition: color .2s linear;
+}
+
+.nav_link:hover {
+    color: white;
+}
+
+/* Text */
+.about {
+    padding: 75px 200px 0px 200px;
+}
+
+.about > h1 {
+    font-family: 'Arial', sans-serif;
+    font-size: 30px;
+}
+
+.about > p {
+    font-family: 'Arial', sans-serif;
+    font-size: 18px;
+}
+
+footer {
+    width: 100%;
+    padding-left: 20px;
+    color: black;
+}

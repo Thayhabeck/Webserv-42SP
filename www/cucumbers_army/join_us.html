@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/join_us.css">
+    <title>Join US - Cucumbers Army</title>
+</head>
+<body>
+    <div class="banner">
+        <div class="container">
+            <button id="joinButton">JOIN</button>
+            <div class="join-container">
+                <label id="counterLabel">0</label>
+                <p> cucumbers at war</p>
+            </div>
+                <a href="index.html">
+                    <button>BACK</button>
+                </a>
+        </div>
+    </div>
+
+    <script>
+        // Select the button JOIN and the label
+        const joinButton = document.getElementById('joinButton');
+        const counterLabel = document.getElementById('counterLabel');
+
+        // Add a event listen for the join click
+        joinButton.addEventListener('click', function() {
+            // Change the value
+            let currentValue = parseInt(counterLabel.textContent);
+            counterLabel.textContent = currentValue + 1;
+        });
+    </script>
+
+</body>
+</html>

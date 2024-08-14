@@ -6,7 +6,7 @@
 #    By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/29 13:51:09 by thabeck-          #+#    #+#              #
-#    Updated: 2024/08/12 23:59:23 by thabeck-         ###   ########.fr        #
+#    Updated: 2024/08/13 22:25:07 by thabeck-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,23 +46,22 @@ $(NAME): 	$(OBJ)
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 	@printf "$(GR)Done!$(RC)\n"
 
-# Nova regra para adicionar o server_name ao arquivo hosts
+all:	update_hosts $(NAME)
+
 update_hosts:
-	@if ! grep -q "127.0.0.1 catarmy" /etc/hosts; then \
-		echo "127.0.0.1 catarmy" | sudo tee -a /etc/hosts; \
+	@if ! grep -q "127.0.0.1 catsarmy" /etc/hosts; then \
+		echo "127.0.0.1 catsarmy" | sudo tee -a /etc/hosts; \
 		echo "$(CY)Server name catsarmy added to /etc/hosts$(RC)"; \
 	else \
 		echo "$(CY)Server name catsarmy already exists in /etc/hosts$(RC)"; \
 	fi
-	@if ! grep -q "127.0.0.1 cucumberarmy" /etc/hosts; then \
-		echo "127.0.0.1 cucumberarmy" | sudo tee -a /etc/hosts; \
-		echo "$(CY)Server name cucumberarmy added to /etc/hosts$(RC)"; \
+	@if ! grep -q "127.0.0.1 cucumbersarmy" /etc/hosts; then \
+		echo "127.0.0.1 cucumbersarmy" | sudo tee -a /etc/hosts; \
+		echo "$(CY)Server name cucumbersarmy added to /etc/hosts$(RC)"; \
 	else \
 		echo "$(CY)Server name cucumberarmy already exists in /etc/hosts$(RC)"; \
 	fi
 
-# Altere a regra all para depender de update_hosts
-all:	update_hosts $(NAME)
 
 re:		fclean all
 

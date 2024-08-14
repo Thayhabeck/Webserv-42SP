@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 22:57:28 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 14:42:54 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:50:24 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,6 @@
 #include "Server.hpp"
 #include "Client.hpp"
 
-/**
- * - Executa os servidores com as configurações constantes arquivo de configuração
- * - Recebe e envia requisições e respostas
- */
 class Webserv
 {
 	public:

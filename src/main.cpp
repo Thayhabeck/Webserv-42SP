@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:52:58 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 22:42:22 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:43:29 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ int main(int argc, char **argv)
 			Webserv		webserv;
 			std::string conf_file = (argc == 1 ? "./conf/default.conf" : argv[1]);
 			server_config.createServerPool(conf_file);
-			// server_config.printServersConf(); // debug
 			webserv.initServers(server_config.getServerPool());
 			webserv.runServers();
 		}

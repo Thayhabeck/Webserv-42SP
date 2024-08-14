@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 22:58:44 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 15:39:48 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:59:59 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ Server &Server::operator=(const Server & rhs)
 	return (*this);
 }
 
-/* Inicia as páginas de erro padrão */
 void Server::initErrorPages(void)
 {
 	_error_pages[301] = "";
@@ -85,7 +84,6 @@ void Server::initErrorPages(void)
 	_error_pages[505] = "";
 }
 
-/* Setters */
 void Server::setServerName(std::string server_name)
 {
 	checkToken(server_name);
@@ -167,8 +165,6 @@ void Server::setAutoindex(std::string autoindex)
 		this->_autoindex = true;
 }
 
-/* Checa se existe o código de erro padrão. Se houver, sobrescreve o caminho para o arquivo,
-caso contrário, cria um novo par: código de erro - caminho para o arquivo */
 void Server::setErrorPages(std::vector<std::string> &param)
 {
 	if (param.empty())
@@ -204,7 +200,6 @@ void Server::setErrorPages(std::vector<std::string> &param)
 	}
 }
 
-/* Checa e seta as locations */
 void Server::setLocation(std::string path, std::vector<std::string> param)
 {
 	Location                    new_location;
@@ -338,7 +333,6 @@ void Server::setLocation(std::string path, std::vector<std::string> param)
 		else if (i < param.size())
 			throw ServerConfigErrorException("Param in a location is invalid");
 	}
-    // Se um path que não é cgi não tem index. Usar o Index do servidor na location
 	if (new_location.getPath() != "/cgi-bin" && new_location.getIndexLocation().empty())
 		new_location.setIndexLocation(this->_index);
 	if (!is_setted_max_size)
@@ -360,7 +354,6 @@ void	Server::setFd(int fd)
 	this->_listen_fd = fd;
 }
 
-/* validation of params */
 bool Server::checkHost(std::string host) const
 {
 	struct sockaddr_in sockaddr;
@@ -380,7 +373,6 @@ bool Server::checkErrorPages()
 	return (true);
 }
 
-/* Get functions */
 const std::string &Server::getServerName()
 {
 	return (this->_server_name);
@@ -431,7 +423,6 @@ int   	Server::getServerFd()
 	return (this->_listen_fd); 
 }
 
-/* As duas funções abaixo podem ser usadas posteriormente para resposta */
 const std::string &Server::getPathErrorPage(short key)
 {
 	std::map<short, std::string>::iterator it = this->_error_pages.find(key);
@@ -440,7 +431,6 @@ const std::string &Server::getPathErrorPage(short key)
 	return (it->second);
 }
 
-/* Função usada na classe principal para obter a location pelo nome */
 const std::vector<Location>::iterator Server::getLocationKey(std::string key)
 {
 	std::vector<Location>::iterator it;
@@ -452,7 +442,6 @@ const std::vector<Location>::iterator Server::getLocationKey(std::string key)
 	throw ServerConfigErrorException("Location path not found");
 }
 
-/* Checa se o token ';' está no final do parâmetro */
 void Server::checkToken(std::string &param)
 {
 	size_t pos = param.rfind(';');
@@ -461,7 +450,6 @@ void Server::checkToken(std::string &param)
 	param.erase(pos);
 }
 
-/* check location for a dublicate */
 bool Server::checkLocations() const
 {
 	if (this->_locations.size() < 2)
@@ -477,14 +465,8 @@ bool Server::checkLocations() const
 	return (false);
 }
 
-/*Criação do socket e ligação a um endereço*/
 void	Server::setupServer(void)
 {
-	// A função socket() cria um ponto de extremidade para comunicação 
-	// e retorna um descritor de arquivo que se refere a esse ponto de extremidade.
-	// O primeiro argumento é o domínio do endereço do socket. Isso é sempre AF_INET (para IPv4).
-	// O segundo argumento é o tipo de socket. Isso é sempre SOCK_STREAM para TCP.
-	// O terceiro argumento é o protocolo. 0 significa que o sistema escolherá o protocolo mais apropriado.
 	if ((_listen_fd = socket(AF_INET, SOCK_STREAM, 0) )  == -1 )
     {
         std::cerr << RED "webserv: socket error" RESET << std::endl;
@@ -492,22 +474,11 @@ void	Server::setupServer(void)
     }
 
     int option_value = 1;
-	// A função setsockopt() define opções para o socket.
-	// O primeiro argumento é o descritor de arquivo do socket.
-	// O segundo argumento é o nível de protocolo. Definimos como SOL_SOCKET para definir opções no nível do socket.
-	// O terceiro argumento é a opção que queremos definir. Neste caso, queremos reutilizar o endereço.
-	// O quarto argumento é um ponteiro para o valor da opção.
-	// O quinto argumento é o tamanho do valor da opção.
     setsockopt(_listen_fd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(int));
-	// A função memset() preenche uma área de memória com um byte específico.
     memset(&_server_address, 0, sizeof(_server_address));
     _server_address.sin_family = AF_INET;
     _server_address.sin_addr.s_addr = _host;
     _server_address.sin_port = htons(_port);
-	// A função bind() liga o socket a um endereço.
-	// O primeiro argumento é o descritor de arquivo do socket.
-	// O segundo argumento é um ponteiro para a estrutura sockaddr que contém o endereço ao qual queremos ligar.
-	// O terceiro argumento é o tamanho da estrutura sockaddr.
     if (bind(_listen_fd, (struct sockaddr *) &_server_address, sizeof(_server_address)) == -1)
     {
         std::cerr << RED "webserv: bind error: " RESET << strerror(errno) << std::endl;

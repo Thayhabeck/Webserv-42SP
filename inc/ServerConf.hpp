@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 20:24:13 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 14:42:33 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:44:54 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ class ServerConf {
 		void				checkCompareServersParams();
 		void				splitServerConfStr(std::string &content);
 		int					strCompare(std::string str1, std::string str2, size_t pos);
-		int					printServersConf();
 		size_t				getServerStartPosition(size_t start, std::string &content);
 		size_t				getServerEndPosition(size_t start, std::string &content);
 		std::vector<Server>	getServerPool();

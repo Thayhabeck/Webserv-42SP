@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 18:49:20 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 14:37:34 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:49:54 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,6 @@
 # include "Server.hpp"
 # include "Cgi.hpp"
 
-/*
-    A classe Response é responsável por construir e armazenar a resposta. Quando a resposta estiver pronta,
-    ela será armazenada em _response_content e poderá ser usada pela função getRes().
-*/
 class Response
 {
 	public:

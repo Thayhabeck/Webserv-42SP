@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 21:44:38 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 14:32:25 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:54:25 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ class Location
 		~Location();
 
 		int			 isValidLocation(std::string &serverRoot);
-		std::string	printMethods() const;
 
 		void setPath(std::string param);
 		void setRootLocation(std::string param);

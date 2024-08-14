@@ -6,13 +6,14 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 18:56:27 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 13:44:40 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:52:12 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Cgi.hpp"
 
-Cgi::Cgi() {
+Cgi::Cgi()
+{
 	this->_cgi_pid = -1;
 	this->_exit_status = 0;
 	this->_cgi_path = "";
@@ -29,8 +30,8 @@ Cgi::Cgi(std::string path)
 	this->_argv = NULL;
 }
 
-Cgi::~Cgi() {
-
+Cgi::~Cgi()
+{
 	if (this->_ch_env)
 	{
 		for (int i = 0; this->_ch_env[i]; i++)
@@ -95,13 +96,6 @@ const std::string &Cgi::getCgiPath() const
     return (this->_cgi_path);
 }
 
-// Esta função é chamada para inicializar o ambiente do CGI
-// A função recebe um objeto HttpRequest e um iterador para um vetor de Location
-// A função verifica se o método da requisição é POST
-// Se for POST, a função adiciona o tamanho do corpo da requisição ao ambiente
-// A função adiciona as variáveis de ambiente necessárias para o CGI
-// A função cria um vetor de strings para armazenar as variáveis de ambiente
-
 void Cgi::initGenericCgiEnv(Request& req, const std::vector<Location>::iterator it_loc)
 {
 	std::string cgi_exec = ("cgi-bin/" + it_loc->getCgiPath()[0]).c_str();
@@ -156,13 +150,6 @@ void Cgi::initGenericCgiEnv(Request& req, const std::vector<Location>::iterator 
 	this->_argv[2] = NULL;
 }
 
-
-/* Esta função é chamada para inicializar as variáveis de ambiente necessárias para executar o CGI
-* A extensão do arquivo CGI é extraída do caminho do path e é usada para encontrar o caminho do executável
-* Setta as variáveis de ambiente presentes na requisição
-* Cria um vetor de strings para armazenar as variáveis de ambiente chamado ch_env
-* Cria um vetor de strings para armazenar os argumentos do CGI chamado argv
-*/
 void Cgi::initCgiEnv(Request& req, const std::vector<Location>::iterator it_loc)
 {
 	int			position;
@@ -210,13 +197,6 @@ void Cgi::initCgiEnv(Request& req, const std::vector<Location>::iterator it_loc)
 	this->_argv[2] = NULL;
 }
 
-/* Esta função é chamada para executar o CGI
-* Cria dois pipes para comunicação entre o pai e o filho
-* Cria um processo filho para executar o CGI
-* Redireciona a entrada e saída padrão do processo filho para os pipes
-* Fecha os descritores de arquivo não utilizados
-* Executa o CGI
-*/
 void Cgi::cgiExec(short &error_code)
 {
 	if (this->_argv[0] == NULL || this->_argv[1] == NULL)
@@ -258,7 +238,6 @@ void Cgi::cgiExec(short &error_code)
 	}
 }
 
-/* Esta função é chamada para encontrar o início da string */
 int Cgi::findStart(const std::string path, const std::string delim)
 {
 	if (path.empty())
@@ -270,7 +249,6 @@ int Cgi::findStart(const std::string path, const std::string delim)
 		return (-1);
 }
 
-/* Esta função é chamada para extrair as variáveis de ambiente do caminho do path */
 std::string Cgi::extractCgiEnv(std::string &path)
 {
 	size_t token = path.find("%");
@@ -285,7 +263,6 @@ std::string Cgi::extractCgiEnv(std::string &path)
 	return (path);
 }
 
-/* Obtém a variável de ambiente PATH_INFO */
 std::string Cgi::getPathInfo(std::string& path, std::vector<std::string> extensions)
 {
 	std::string tmp;
@@ -308,7 +285,6 @@ std::string Cgi::getPathInfo(std::string& path, std::vector<std::string> extensi
 	return (end == std::string::npos ? tmp : tmp.substr(0, end));
 }
 
-/* Limpa o ambiente do CGI */
 void		Cgi::clearCgiEnv()
 {
 	this->_cgi_pid = -1;

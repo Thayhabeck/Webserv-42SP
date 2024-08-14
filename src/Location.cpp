@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 21:48:04 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/10 17:56:48 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:54:37 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ Location &Location::operator=(const Location &rhs)
 
 Location::~Location() { }
 
-/* Setters */
 void Location::setPath(std::string param)
 {
 	this->_path = param;
@@ -71,7 +70,7 @@ void Location::setPath(std::string param)
 
 void Location::setRootLocation(std::string param)
 {
-	if (ConfFile::getPathType(param) != 2) //Root tem que ser um diretório
+	if (ConfFile::getPathType(param) != 2)
 		throw Server::ServerConfigErrorException("Location root is not a directory");
 	this->_root = param;
 }
@@ -147,7 +146,6 @@ void Location::setMaxBodySize(unsigned long param)
 	this->_client_max_body_size = param;
 }
 
-/* getters */
 const std::string &Location::getPath() const
 {
 	return (this->_path);
@@ -203,10 +201,9 @@ const unsigned long &Location::getMaxBodySize() const
 	return (this->_client_max_body_size);
 }
 
-// Valida o location
 int Location::isValidLocation(std::string &serverRoot)
 {
-	Location& location = *this; // O objeto location será o próprio objeto que chamou a função
+	Location& location = *this;
 	if (location.getPath() == "/cgi-bin")
 	{
 		if (location.getCgiPath().empty() || location.getCgiExtension().empty() || location.getIndexLocation().empty())
@@ -276,29 +273,4 @@ int Location::isValidLocation(std::string &serverRoot)
 		}
 	}
 	return (0);
-}
-
-/* Função para debbugar */
-std::string Location::printMethods() const
-{
-	std::string res;
-	if (_allowed_methods[2])
-	{
-		if (!res.empty())
-			res.insert(0, ", ");
-		res.insert(0, "DELETE");
-	}
-	if (_allowed_methods[1])
-	{
-		if (!res.empty())
-			res.insert(0, ", ");
-		res.insert(0, "POST");
-	}
-	if (_allowed_methods[0])
-	{
-		if (!res.empty())
-			res.insert(0, ", ");
-		res.insert(0, "GET");
-	}
-	return (res);
 }

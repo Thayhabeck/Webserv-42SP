@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 19:09:17 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 19:14:40 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:58:38 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ Response::Response(Request &req)
     fillMimeTypes();
 }
 
-/* Monta o header do response */
 void    Response::setHeaders()
 {
     headerContentType();
@@ -56,7 +55,6 @@ void    Response::setHeaders()
     _response_content.append("\r\n");
 }
 
-/* Procura no arquivo o tipo de conteúdo com base na extensão do arquivo e seta no header do response */
 void   Response::headerContentType()
 {
     _response_content.append("Content-Type: ");
@@ -67,7 +65,6 @@ void   Response::headerContentType()
     _response_content.append("\r\n");
 }
 
-/* Seta o tamanho do conteúdo no header do response */
 void   Response::headerContentLength()
 {
     std::stringstream ss;
@@ -77,27 +74,23 @@ void   Response::headerContentLength()
     _response_content.append("\r\n");
 }
 
-/* Seta o estado da conexão no header do response */
 void   Response::headerConnection()
 {
     if(request.getHeader("connection") == "keep-alive")
         _response_content.append("Connection: keep-alive\r\n");
 }
 
-/* Seta o servidor no header do response */
 void   Response::headerServer()
 {
     _response_content.append("Server: MathayWebserv\r\n");
 }
 
-/* Seta o location no header do response */
 void    Response::headerLocation()
 {
     if (_location.length())
         _response_content.append("Location: "+ _location +"\r\n");
 }
 
-/* Seta a data e hora no header do response */
 void    Response::headerDate()
 {
     char date[1000];
@@ -110,8 +103,6 @@ void    Response::headerDate()
 
 }
 
-/* Verifica se o pipeline foi bem sucedido, se não, retorna 500
-*  Se o pipeline foi bem sucedido, então retorna 0 */
 int Response::handleCgiTemp(std::string &location_key)
 {
     std::string path;
@@ -124,7 +115,6 @@ int Response::handleCgiTemp(std::string &location_key)
     return (0);
 }
 
-/* Verifica se o método é permitido */
 bool isAllowedMethod(HttpMethod &method, Location &location, short &code)
 {
     std::vector<short> methods = location.getMethods();
@@ -136,7 +126,6 @@ bool isAllowedMethod(HttpMethod &method, Location &location, short &code)
     return (0);
 }
 
-/* Checa se a localização tem um retorno e seta o código e a localização */
 bool    checkLocationReturn(Location &loc, short &code, std::string &location)
 {
     if (!loc.getReturn().empty())
@@ -150,19 +139,16 @@ bool    checkLocationReturn(Location &loc, short &code, std::string &location)
     return (0);
 }
 
-/* Substitui o alias do location no caminho do arquivo */
 void replaceLocationAlias(Location &location, Request &request, std::string &target_file)
 {
     target_file = combinePaths(location.getAlias(), request.getPath().substr(location.getPath().length()), "");
 }
 
-/* Adiciona o root ao caminho do arquivo */
 void appendRoot(Location &location, Request &request, std::string &target_file)
 {
     target_file = combinePaths(location.getRootLocation(), request.getPath(), "");
 }
 
-/* Manipula o arquivo CGI, verifica se a extensão é suportada, se o arquivo existe e é executável, então executa o CGI */
 int        Response::handleCgi(std::string &location_key)
 {
     std::string path;
@@ -209,9 +195,6 @@ int        Response::handleCgi(std::string &location_key)
     return (0);
 }
 
-/* Compara o URI com as localizações do arquivo de configuração e tenta encontrar a melhor correspondência.
- Se a correspondência for encontrada, então location_key é definido para essa localização, 
-caso contrário, location_key será uma string vazia.*/
 static void    getLocationMatch(std::string &path, std::vector<Location> locations, std::string &location_key)
 {
     size_t biggest_match = 0;
@@ -234,8 +217,6 @@ static void    getLocationMatch(std::string &path, std::vector<Location> locatio
         location_key = "";
 }
 
-/* Manipula o arquivo de destino, verifica se é um diretório, se for um diretório, 
-* verifica se tem um arquivo de índice, caso contrário, verifica se a indexação automática está habilitada, caso contrário, retorna 403.*/
 int    Response::handleTarget()
 {
     std::string location_key;
@@ -346,18 +327,15 @@ bool Response::requestError()
     return (0);
 }
 
-/* Retornar a página de erro padrão*/
 void Response::buildErrorBody()
 {
         if( !_server.getErrorPages().count(_code) || _server.getErrorPages().at(_code).empty() ||
          request.getMethod() == DELETE)
         {
-            // Insere a página de erro padrão que é uma página HTML com o código de erro e a mensagem de erro
             setServerDefaultErrorPages();
         }
         else
         {
-            // Se a página de erro não for padrão, então redireciona para a página de erro
             if(_code >= 400 && _code < 500)
             {
                 _location = _server.getErrorPages().at(_code);
@@ -401,21 +379,16 @@ void    Response::buildResponse()
         _response_content.append(_response_body);
 }
 
-/* Retorna o response inteiro ( Headers + Body ) */
 std::string Response::getResponse()
 {
     return (_response_content);
 }
 
-/* Retorna o tamanho do response inteiro ( Headers + Body ) */
 size_t Response::getResponseLen() const
 {
 	return (_response_content.length());
 }
 
-/* Constroi a linha de status com base no código de status. 
-* Formato da linha de status: HTTP/1.1 <código de status> <mensagem de status> 
-* Exemplo: HTTP/1.1 200 OK */
 void        Response::setStatusLine()
 {
     _response_content.append("HTTP/1.1 " + toString(_code) + " ");
@@ -454,7 +427,6 @@ void Response::setServerDefaultErrorPages()
     _response_body = getErrorPage(_code);
 }
 
-/* Constroi o corpo da resposta */
 int    Response::buildResponseBody()
 {
     if (request.getBody().length() > _server.getClientMaxBodySize())
@@ -512,7 +484,6 @@ int    Response::buildResponseBody()
     return (0);
 }
 
-/* Lê o arquivo e armazena o conteúdo no corpo da resposta */
 int Response::readFile()
 {
     std::ifstream file(_target_file.c_str());
@@ -557,7 +528,6 @@ int    Response::getCgiState()
     return (_cgi);
 }
 
-/* Remove o boundary do upload do corpo da requisição */
 std::string Response::removeUploadBoundary(std::string &body, std::string &boundary)
 {
     std::string buffer;
@@ -621,7 +591,6 @@ std::string Response::removeUploadBoundary(std::string &body, std::string &bound
     return (new_body);
 }
 
-/* Preenche o map com os tipos MIME */
 void Response::fillMimeTypes()
 {
     _mime[".html"] = "text/html";

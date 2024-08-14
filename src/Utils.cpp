@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 18:17:55 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 15:23:21 by thabeck-         ###   ########.fr       */
+/*   Updated: 2024/08/13 23:03:01 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Utils.hpp"
 
-/* Converte string para inteiro */
 int ft_strtoi(std::string str)
 {
     std::stringstream ss(str);
@@ -28,7 +27,6 @@ int ft_strtoi(std::string str)
     return (res);
 }
 
-/* Converte hexadecimal para decimal */
 unsigned int ft_hexToDec(const std::string& nb)
 {
 	unsigned int x;
@@ -38,7 +36,6 @@ unsigned int ft_hexToDec(const std::string& nb)
 	return (x);
 }
 
-/* Obtém o http status code de acordo com o código de status */
 std::string getStrSatusCode(short statusCode)
 {
     switch (statusCode)
@@ -150,7 +147,6 @@ std::string getStrSatusCode(short statusCode)
         }
 }
 
-/* Obtém a página de erro de acordo com o código de status */
 std::string getErrorPage(short statusCode)
 {
     std::string statusCodeStr = toString(statusCode);
@@ -186,7 +182,6 @@ std::string getErrorPage(short statusCode)
     );
 }
 
-/* Obtém a página de índice automático de um diretório */
 int getAutoIndexPage(std::string &dir_name, std::vector<uint8_t> &body, size_t &body_len)
 {
     struct dirent   *entityStruct;
@@ -301,12 +296,10 @@ int getAutoIndexPage(std::string &dir_name, std::vector<uint8_t> &body, size_t &
 
     body.insert(body.begin(), dirListPage.begin(), dirListPage.end());
     body_len = body.size();
-    closedir(directory); // Fechar o diretório após a leitura
+    closedir(directory);
     return (0);
 }
 
-
-// Checa se a URI passada é válida, ou seja, não possui caminho que vai antes da raiz
 bool    checkUriPos(std::string path)
 {
     std::string tmp(path);
@@ -325,9 +318,6 @@ bool    checkUriPos(std::string path)
     return (0);
 }
 
-/**
-* Checa se o caractere passado é permitido em um URI de acordo com a RFC 2616
- **/
 bool    allowedCharURI(uint8_t ch)
 {
     if ((ch >= '#' && ch <= ';') || (ch >= '?' && ch <= '[') || (ch >= 'a' && ch <= 'z') ||
@@ -336,7 +326,6 @@ bool    allowedCharURI(uint8_t ch)
     return (false);
 }
 
-/* Remove os espaços em branco à esquerda e à direita de uma string */
 void    trimStr(std::string &str)
 {
     static const char* spaces = " \t";
@@ -344,21 +333,18 @@ void    trimStr(std::string &str)
     str.erase(str.find_last_not_of(spaces) + 1);
 }
 
-/* Converte uma string para minúsculas */
 void    toLower(std::string &str)
 {
     for (size_t i = 0; i < str.length(); ++i)
         str[i] = std::tolower(str[i]);
 }
 
-/* Verifica se o arquivo existe */
 bool fileExists (const std::string& f)
 {
     std::ifstream file(f.c_str());
     return (file.good());
 }
 
-/* Verifica se o caminho é um diretório */
 bool isDirectory(std::string path)
 {
     struct stat file_stat;
@@ -368,7 +354,6 @@ bool isDirectory(std::string path)
     return (S_ISDIR(file_stat.st_mode));
 }
 
-/* Combina os caminhos dos arquivos */
 std::string combinePaths(std::string p1, std::string p2, std::string p3)
 {
     std::string res;

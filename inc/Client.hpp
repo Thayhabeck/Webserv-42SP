@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 22:44:33 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 14:30:42 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:49:27 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@
 #include "Request.hpp"
 #include "Response.hpp"
 
-/** Armazena todas as informações relacionadas ao cliente, como socket, endereço IP, request e response. *
- * Cada Cliente também armazena o servidor ao qual está conectado. **/
 class Client
 {
 	public:

@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 21:54:03 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 01:13:21 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:57:03 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ Request::Request()
 
 Request::~Request() {}
 
-/*Tabela de tokens permitidos em um nome de campo de acordo com a RFC 2616*/
 bool* initTokenTable()
 {
     static bool token_table[256] = {false};
@@ -59,14 +58,11 @@ bool* initTokenTable()
 
 static const bool* token_table = initTokenTable();
 
-/* Checa se o caractere passado é permitido em um nome de campo de acordo com a RFC 2616 */
 inline bool isToken(uint8_t ch)
 {
     return token_table[ch];
 }
 
-/* Recebe os dados do cliente e os armazena em um buffer, que é processado pelo parser
-* para extrair as informações da requisição passo a passo */
 void Request::feedRequest(char *data, size_t size)
 {
     u_int8_t                    character;
@@ -77,7 +73,6 @@ void Request::feedRequest(char *data, size_t size)
         character = data[i];
         switch (_state)
         {
-            //Este case trata a primeira linha da requisição, que contém o método, a URI e a versão do HTTP
             case Request_Line:
             {
                 if (character == 'G')
@@ -97,10 +92,8 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_Method;
                 break ;
             }
-            //Compara o caracter atual com o caracter da string do método na posição _method_index
             case Request_Line_Method:
             {
-                // Compara se o caracter atual é igual ao caracter da string do método na posição _method_index
                 if (character == _method_str[_method][_method_index])
                     _method_index++;
                 else
@@ -113,7 +106,6 @@ void Request::feedRequest(char *data, size_t size)
                     _state = Request_Line_First_Space;
                 break ;
             }
-            //Verifica se o caracter atual é um espaço
             case Request_Line_First_Space:
             {
                 if (character != ' ')
@@ -125,7 +117,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_URI_Path_Slash;
                 continue ;
             }
-            //Verifica se o caracter atual é uma barra
             case Request_Line_URI_Path_Slash:
             {
                 if (character == '/')
@@ -141,7 +132,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual é um espaço, interrogação ou cerquilha
             case Request_Line_URI_Path:
             {
                 if (character == ' ')
@@ -179,7 +169,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual é um espaço ou cerquilha
             case Request_Line_URI_Query:
             {
                 if (character == ' ')
@@ -210,7 +199,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual é um espaço
             case Request_Line_URI_Fragment:
             {
                 if (character == ' ')
@@ -234,7 +222,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual remete a uma pasta que vai antes da raiz
             case Request_Line_Ver:
             {
                 if (checkUriPos(_path))
@@ -252,7 +239,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_HTTP_1;
                 break ;
             }
-            //Verifica se o caracter atual é um T
             case Request_Line_HTTP_1:
             {
                 if (character != 'T')
@@ -264,7 +250,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_HTTP_2;
                 break ;
             }
-            //Verifica se o caracter atual é um T
             case Request_Line_HTTP_2:
             {
                 if (character != 'T')
@@ -276,7 +261,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_HTTP_3;
                 break ;
             }
-            //Verifica se o caracter atual é um P
             case Request_Line_HTTP_3:
             {
                 if (character != 'P')
@@ -288,7 +272,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_HTTP_Slash;
                 break ;
             }
-            //Verifica se o caracter atual é uma barra
             case Request_Line_HTTP_Slash:
             {
                 if (character != '/')
@@ -300,7 +283,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_Major;
                 break ;
             }
-            //Verifica se o caracter atual é um número
             case Request_Line_Major:
             {
                 if (!isdigit(character))
@@ -314,7 +296,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_Dot;
                 break ;
             }
-            //Verifica se o caracter atual é um ponto
             case Request_Line_Dot:
             {
                 if (character != '.')
@@ -326,7 +307,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_Minor;
                 break ;
             }
-            //Verifica se o caracter atual é um número
             case Request_Line_Minor:
             {
                 if (!isdigit(character))
@@ -339,7 +319,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_CR;
                 break ;
             }
-            //Verifica se o caracter atual é um tipo de quebra de linha (CR)
             case Request_Line_CR:
             {
                 if (character != '\r')
@@ -351,7 +330,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Request_Line_LF;
                 break ;
             }
-            //Verifica se o caracter atual é um tipo de quebra de linha (LF)
             case Request_Line_LF:
             {
                 if (character != '\n')
@@ -364,7 +342,6 @@ void Request::feedRequest(char *data, size_t size)
                 _storage.clear();
                 continue ;
             }
-            //Verifica se o caracter atual é permitido em um nome de campo
             case Field_Name_Start:
             {
                 if (character == '\r')
@@ -379,7 +356,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual é um dois pontos
             case Fields_End:
             {
                 if (character == '\n')
@@ -387,7 +363,6 @@ void Request::feedRequest(char *data, size_t size)
                     _storage.clear();
                     _fields_done_flag = true;
                     _handle_header_fields();
-                    // Se o corpo da mensagem estiver presente, o estado é alterado para Message_Body
                     if (_body_flag == 1)
                     {
                         if (_chunked_flag == true)
@@ -411,7 +386,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual é um dois pontos
             case Field_Name:
             {
                 if (character == ':')
@@ -429,7 +403,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual é um CR
             case Field_Value:
             {
                 if ( character == '\r' )
@@ -442,7 +415,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual é um LF
             case Field_Value_End:
             {
                 if ( character == '\n' )
@@ -458,7 +430,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 break ;
             }
-            //Verifica se o caracter atual é um número hexadecimal
             case Chunked_Length_Begin:
             {
                 if (isxdigit(character) == 0)
@@ -477,7 +448,6 @@ void Request::feedRequest(char *data, size_t size)
                     _state = Chunked_Length;
                 continue ;
             }
-            //Verifica se o caracter atual é um número hexadecimal
             case Chunked_Length:
             {
                 if (isxdigit(character) != 0)
@@ -496,7 +466,6 @@ void Request::feedRequest(char *data, size_t size)
                     _state = Chunked_Ignore;
                 continue ;
             }
-            //Verifica se o caracter atual é um CR
             case Chunked_Length_CR:
             {
                 if ( character == '\r')
@@ -509,7 +478,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 continue ;
             }
-            //Verifica se o caracter atual é um LF
             case Chunked_Length_LF:
             {
                 if ( character == '\n')
@@ -527,14 +495,12 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 continue ;
             }
-            //Ignora o caracter atual
             case Chunked_Ignore:
             {
                 if (character == '\r')
                     _state = Chunked_Length_LF;
                 continue ;
             }
-            //Verifica se o caracter atual é um número hexadecimal
             case Chunked_Data:
             {
 				_body.push_back(character);
@@ -543,7 +509,6 @@ void Request::feedRequest(char *data, size_t size)
                     _state = Chunked_Data_CR;
 				continue ;
             }
-            //Verifica se o caracter atual é um CR
             case Chunked_Data_CR:
             {
                 if ( character == '\r')
@@ -556,7 +521,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 continue ;
             }
-            //Verifica se o caracter atual é um LF
             case Chunked_Data_LF:
             {
                 if ( character == '\n')
@@ -569,7 +533,6 @@ void Request::feedRequest(char *data, size_t size)
                 }
                 continue ;
             }
-            //Verifica se o caracter atual é um CR
             case Chunked_End_CR:
             {
                 if (character != '\r')
@@ -582,7 +545,6 @@ void Request::feedRequest(char *data, size_t size)
                 continue ;
 
             }
-            //Verifica se o caracter atual é um LF
             case Chunked_End_LF:
             {
                 if (character != '\n')
@@ -595,7 +557,6 @@ void Request::feedRequest(char *data, size_t size)
                 _state = Parsing_Done;
                 continue ;
             }
-            //Verifica se o caracter atual é um caractere permitido em um corpo de mensagem
             case Message_Body:
             {
                 if (_body.size() < _body_length )
@@ -730,7 +691,6 @@ void        Request::printRequest()
     << _body_done_flag << "FEIDLS FLAG = " << _fields_done_flag << std::endl;
 }
 
-/* Trata os campos do cabeçalho da requisição */
 void        Request::_handle_header_fields()
 {
     std::stringstream ss;
@@ -761,7 +721,6 @@ void        Request::_handle_header_fields()
     }
 }
 
-/* Limpa a requisição */
 void    Request::clearRequest()
 {
     _path.clear();
@@ -788,7 +747,6 @@ void    Request::clearRequest()
     _upload_flag = false;
 }
 
-/* Checa o valor do cabeçalho "Connection". Se for keep-alive, não fecha a conexão. */
 bool        Request::keepConnected()
 {
     if (_request_headers.count("connection"))
@@ -799,7 +757,6 @@ bool        Request::keepConnected()
     return (true);
 }
 
-/* Quebra o corpo da requisição */
 void            Request::breakRequestBody(int bytes)
 {
     _body_str = _body_str.substr(bytes);

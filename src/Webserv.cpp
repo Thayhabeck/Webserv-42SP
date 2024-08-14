@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:20:35 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 23:05:53 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 23:43:23 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ void    Webserv::openCliConnection(Server &serv)
 
     if (fcntl(client_sock, F_SETFL, O_NONBLOCK) < 0)
     {
-        std::cerr << RED "webserv: fcntl error: " RESET << strerror(errno)<< std::endl;
+        std::cerr << RED "webserv: fcntl error" RESET << std::endl;
         removeFromSet(client_sock, _recv_fd_pool);
         close(client_sock);
         return ;
@@ -282,7 +282,7 @@ void    Webserv::sendCgiBody(Client &c, Cgi &cgi)
 
     if (bytes_sent < 0)
     {
-        std::cerr << RED "webserv: error sending to CGI script: " RESET << strerror(errno)<< std::endl;
+        std::cerr << RED "webserv: error sending to CGI script" RESET << std::endl;
         removeFromSet(cgi.pipe_in[1], _write_fd_pool);
         close(cgi.pipe_in[1]);
         close(cgi.pipe_out[1]);

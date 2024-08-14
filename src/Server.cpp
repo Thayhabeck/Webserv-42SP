@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 22:58:44 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 22:59:59 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 23:43:05 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -481,7 +481,7 @@ void	Server::setupServer(void)
     _server_address.sin_port = htons(_port);
     if (bind(_listen_fd, (struct sockaddr *) &_server_address, sizeof(_server_address)) == -1)
     {
-        std::cerr << RED "webserv: bind error: " RESET << strerror(errno) << std::endl;
+        std::cerr << RED "webserv: bind error" RESET << std::endl;
         exit(EXIT_FAILURE);
     }
 }

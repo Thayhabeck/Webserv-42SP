@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: thabeck- <thabeck-@student.42sp.org.br>    +#+  +:+       +#+         #
+#    By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/29 13:51:09 by thabeck-          #+#    #+#              #
-#    Updated: 2024/08/13 22:25:07 by thabeck-         ###   ########.fr        #
+#    Updated: 2024/08/13 22:38:48 by matcardo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,8 @@ $(NAME): 	$(OBJ)
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 	@printf "$(GR)Done!$(RC)\n"
 
-all:	update_hosts $(NAME)
+all:	$(NAME)
+		@make --no-print-directory update_hosts
 
 update_hosts:
 	@if ! grep -q "127.0.0.1 catsarmy" /etc/hosts; then \

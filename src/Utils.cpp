@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 18:17:55 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 23:03:01 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 23:25:35 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,7 +279,7 @@ int getAutoIndexPage(std::string &dir_name, std::vector<uint8_t> &body, size_t &
     dirListPage.append("<script>\n");
     dirListPage.append("function deleteDoc(docId) {\n");
     dirListPage.append("const docElement = document.getElementById(docId);\n");
-    dirListPage.append("const docUrl = `http://127.0.0.1:8002/docs/${docId}`;\n");
+    dirListPage.append("const docUrl = `http://127.0.0.1:3001/docs/${docId}`;\n");
     dirListPage.append("fetch(docUrl, {\n");
     dirListPage.append("method: 'DELETE',\n");
     dirListPage.append("}).then(response => {\n");

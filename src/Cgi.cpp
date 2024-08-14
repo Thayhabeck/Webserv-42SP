@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 18:56:27 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 22:52:12 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/13 23:26:08 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,6 @@ void Cgi::initGenericCgiEnv(Request& req, const std::vector<Location>::iterator 
     this->_env["PATH_TRANSLATED"] = this->_cgi_path;//
     this->_env["REQUEST_URI"] = this->_cgi_path;//
     this->_env["SERVER_NAME"] = req.getHeader("host");
-    this->_env["SERVER_PORT"] ="8002";
     this->_env["REQUEST_METHOD"] = req.getMethodStr();
     this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
     this->_env["REDIRECT_STATUS"] = "200";

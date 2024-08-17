@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 22:57:28 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 22:50:24 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/17 02:00:29 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ class Webserv
 
 		void	initServers(std::vector<Server>);
 		void	runServers();
+		void	close_servers();
 		
 	private:
 		void	openCliConnection(Server &);

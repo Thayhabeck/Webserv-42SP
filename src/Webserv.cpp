@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:20:35 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/13 23:43:23 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/17 02:01:04 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -353,4 +353,19 @@ void	Webserv::removeFromSet(const int i, fd_set &set)
     FD_CLR(i, &set);
     if (i == _biggest_fd)
         _biggest_fd--;
+}
+
+void	Webserv::close_servers(void)
+{
+	for (size_t i = 0; i < this->_servers.size(); i++)
+		close(this->_servers[i]._listen_fd);
+	this->_servers.clear();
+    for (int i = 0; i <= this->_biggest_fd; ++i) {
+        if (FD_ISSET(i, &_recv_fd_pool) || FD_ISSET(i, &_write_fd_pool)) {
+            close(i); 
+            FD_CLR(i, &_recv_fd_pool);
+            FD_CLR(i, &_write_fd_pool);
+        }
+    }
+	return ;
 }

@@ -6,7 +6,7 @@
 /*   By: matcardo <matcardo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/07 22:21:46 by thabeck-          #+#    #+#             */
-/*   Updated: 2024/08/11 14:39:12 by matcardo         ###   ########.fr       */
+/*   Updated: 2024/08/17 02:00:03 by matcardo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ class Server
 		const std::string						&getPathErrorPage(short key);
 		const std::vector<Location>::iterator	getLocationKey(std::string key);
 
+		int	_listen_fd;
+
 		class ServerConfigErrorException : public std::exception
 		{
 			private:
@@ -94,7 +96,6 @@ class Server
 		std::map<short, std::string>	_error_pages;
 		unsigned long					_client_max_body_size;
 
-		int								_listen_fd;
 		struct sockaddr_in				_server_address;
 };
 

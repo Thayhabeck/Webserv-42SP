@@ -43,8 +43,6 @@ html_response = f"""
             font-family: 'Montserrat', sans-serif;   
             font-size: 15px;
             line-height: 1.6;
-            display: flex;
-            align-items: center;
         }}
         .banner {{
             display:flex;
@@ -54,6 +52,7 @@ html_response = f"""
             height: 100vh;
             background-size: cover;
             background-position-y: 0%;
+            padding-top: 150px;
         }}
         .header {{
             display: block;
@@ -115,7 +114,7 @@ html_response = f"""
 
 <div class="banner">
     <div class="container">
-        <h1 style='color:blue; text-align:center;'>{message}</h1>
+        <h1 style='color:#1C300D; text-align:center;'>{message}</h1>
     </div>
 </div>
 
